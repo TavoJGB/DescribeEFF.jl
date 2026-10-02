@@ -1,0 +1,2 @@
+get_share_owners(h_tenure::AbstractVector, weights::AbstractVector; kwargs...) = weighted_share(h_tenure, :owner, weights; kwargs...)
+get_share_unemployed(emp_status::AbstractVector, weights::AbstractVector; kwargs...) = weighted_share(emp_status, "unemployed", weights; kwargs...)
