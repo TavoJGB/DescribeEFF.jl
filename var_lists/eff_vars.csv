@@ -9,17 +9,20 @@ educ,p1_5,2002,2099,individual
 dummy_emp,p6_1c1,2002,2099,individual
 dummy_selfemp,p6_1c2,2002,2099,individual
 dummy_unemp,p6_1c3,2002,2099,individual
+dummy_search_job,p6_5,2002,2099,individual
+reservation_wage,p6_29,2002,2099,individual
 lab_income_direct,p6_64,2002,2099,individual
 lab_income_inkind,p6_66,2002,2099,individual
 
 # Household-level variables
-c_wgt,facine3,2002,2099,household
+weight,facine3,2002,2099,household
 h_size,p1,2002,2099,household
 income,renthog,2002,2099,household
 asset_home,asset_home,2002,2099,household
 debt_home,debt_home,2002,2099,household
 
 # Real Estate property variables
+n_properties,p2_33,2002,2099,household
 type,p2_35a,2002,2099,real estate
 acquisition_type,p2_35,2002,2099,real estate
 acquisition_year,p2_36,2002,2099,real estate

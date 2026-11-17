@@ -5,15 +5,18 @@
 
 function get_eff(args...; kwargs...)
     # Read EFF into EconFrames
-    eff_ii, eff_hh = read_eff_into_econframes(args...; kwargs...)
+    eff_ii, eff_hh, eff_re = read_eff_into_econframes(args...; kwargs...)
     # Replace missing income values with zeros
     @. eff_ii.lab_income_direct = coalesce(eff_ii.lab_income_direct, 0)
     @. eff_ii.lab_income_inkind = coalesce(eff_ii.lab_income_inkind, 0)
+    # Additional variables
+    eff_ii.lab_income = @. eff_ii.lab_income_direct + eff_ii.lab_income_inkind
     # Monetary variables
-    monetary_variable!(eff_hh, [:wealth; :asset_home; :debt_home], AnyGood())
-    monetary_variable!(eff_ii, [:lab_income_direct, :lab_income_inkind], AnyGood())
+    curr = NominalEUR()
+    monetary_variable!(eff_hh, [:income; :wealth; :asset_home; :debt_home], curr, AnyGood())
+    monetary_variable!(eff_ii, [:lab_income_direct, :lab_income_inkind, :lab_income], curr, AnyGood())
     # Return EconSet
-    return EconSet(Dict(:ii => eff_ii, :hh => eff_hh), (:ii, :hh) => [:year, :hid, :imputation])
+    return EconSet(Dict(:ii => eff_ii, :hh => eff_hh, :re => eff_re), (:ii, :hh) => [:year, :hid, :imputation], (:re, :hh) => [:year, :hid, :imputation])
 end
 
 
@@ -41,19 +44,21 @@ function read_eff_into_econframes(
 )
     length(years) == 1 && return read_eff_into_econframes(only(years), args...; kwargs...)
     # Read EFF
-    eff_df_ii, eff_df_hh = read_eff_into_df(years, args...; kwargs...)
+    eff_df_ii, eff_df_hh, eff_df_re = read_eff_into_df(years, args...; kwargs...)
     # Create EconFrames
-    eff_ii = EconRepeatedCrossSection(eff_df_ii, EFF(), Individual(), Annual(), date_var; currency=NominalEUR())
-    eff_hh = EconRepeatedCrossSection(eff_df_hh, EFF(), Household(), Annual(), date_var; currency=NominalEUR())
-    return eff_ii, eff_hh
+    eff_ii = EconRepeatedCrossSection(eff_df_ii, EFF(), Individual(), Annual(), date_var; imputation_var=:imputation)
+    eff_hh = EconRepeatedCrossSection(eff_df_hh, EFF(), Household(), Annual(), date_var; imputation_var=:imputation)
+    eff_re = EconRepeatedCrossSection(eff_df_re, EFF(), RealEstate(), Annual(), date_var; imputation_var=:imputation)
+    return eff_ii, eff_hh, eff_re
 end
 function read_eff_into_econframes(year::Int, args...; kwargs...)
     # Read EFF
-    eff_df_ii, eff_df_hh = read_eff_into_df([year], args...; kwargs...)
+    eff_df_ii, eff_df_hh, eff_df_re = read_eff_into_df([year], args...; kwargs...)
     # Create EconFrames
-    eff_ii = EconCrossSection(eff_df_ii, EFF(), Individual(), year-1; currency=NominalEUR())
-    eff_hh = EconCrossSection(eff_df_hh, EFF(), Household(), year-1; currency=NominalEUR())
-    return eff_ii, eff_hh
+    eff_ii = EconCrossSection(eff_df_ii, EFF(), Individual(), year-1; imputation_var=:imputation)
+    eff_hh = EconCrossSection(eff_df_hh, EFF(), Household(), year-1; imputation_var=:imputation)
+    eff_re = EconCrossSection(eff_df_re, EFF(), RealEstate(), year-1; imputation_var=:imputation)
+    return eff_ii, eff_hh, eff_re
 end
 
 

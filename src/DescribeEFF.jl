@@ -14,6 +14,8 @@ module DescribeEFF
     BASE_FOLDER = dirname(@__DIR__)
 
     # Load dependencies
+    include(joinpath(BASE_FOLDER, "src", "dep", "globals.jl"))
+        export EFF_YEARS
     include(joinpath(BASE_FOLDER, "src", "dep", "quantiles.jl"))
         export preliminaries_quantile_matrix, quantile_matrix, get_quants, get_avg_quants
     include(joinpath(BASE_FOLDER, "src", "dep", "read_data.jl"))
@@ -21,5 +23,7 @@ module DescribeEFF
     include(joinpath(BASE_FOLDER, "src", "dep", "stats.jl"))
         export get_share_owners, get_share_unemployed
     include(joinpath(BASE_FOLDER, "src", "dep", "types.jl"))
+    include(joinpath(BASE_FOLDER, "src", "dep", "utils.jl"))
+        export get_emp_stat
 
 end
